@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "119085340684",
+    "project_id": "ag4-notificaciones-8c66f",
+    "storage_bucket": "ag4-notificaciones-8c66f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119085340684:android:206c1f27fdd71c42b3b629",
+        "android_client_info": {
+          "package_name": "com.example.ag4_notificaciones"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA35eOODOqXbeclSXfmnIY0OAmcgMdzgI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
