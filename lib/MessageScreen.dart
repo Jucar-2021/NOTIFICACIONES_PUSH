@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 class MessageScreen extends StatefulWidget {
   final DocumentSnapshot doc;
 
-  const MessageScreen({super.key,
+  const MessageScreen({
+    super.key,
     required this.doc,
   });
 
@@ -35,7 +36,6 @@ class _MessageScreenState extends State<MessageScreen> {
     super.initState();
   }
 
-
   _messagehandler(String entrada) {
     print(entrada);
     db.collection("users").doc(widget.doc.id).collection("notifications").add({
@@ -56,30 +56,56 @@ class _MessageScreenState extends State<MessageScreen> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Container(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: "¿Cual es el mensaje",
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    // 90% del ancho de la pantalla para evitar desvordamiento independiente del
+                    //tamaño del dispositivo
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextField(
+                          controller: controller,
+                          decoration: InputDecoration(
+                            hintText: "¿Cuál es el mensaje?",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-              FloatingActionButton(
-                onPressed: () {
-                  if (controller.text.isNotEmpty) {
-                    _messagehandler(controller.text);
-                  }
-                },
-                child: Icon(Icons.send),
-              )
+              Padding(
+                  padding: EdgeInsets.all(30),
+                  child: SizedBox(
+                    width: 125,
+                    height: 125,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          if (controller.text.isNotEmpty) {
+                            _messagehandler(controller.text);
+                          }
+                          print("GIF presionado");
+                        },
+                        child: Image.asset("assets/send.gif"),
+                      ),
+                    ),
+                  )),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

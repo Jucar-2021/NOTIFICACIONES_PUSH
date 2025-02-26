@@ -9,6 +9,7 @@ class HomeScreen extends StatefulWidget {
   final String tokenUsuario;
 
   const HomeScreen({super.key, required this.tokenUsuario});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -43,24 +44,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _showMessage(title, message) {
     showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            title: Text(title),
-            content: Text(message),
-            actions: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                },
-                child: Text("Dismiss"),
-              )
-            ],
-          );
-        });
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: Text("Dismiss"),
+            )
+          ],
+        );
+      },
+    );
   }
 
   _getUsers() async {
