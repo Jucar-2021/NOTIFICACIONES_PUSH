@@ -35,6 +35,7 @@ class _MessageScreenState extends State<MessageScreen> {
     super.initState();
   }
 
+
   _messagehandler(String entrada) {
     print(entrada);
     db.collection("users").doc(widget.doc.id).collection("notifications").add({
