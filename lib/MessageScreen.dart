@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class MessageScreen extends StatefulWidget {
   final DocumentSnapshot doc;
 
-  MessageScreen({
+  const MessageScreen({super.key,
     required this.doc,
   });
 
