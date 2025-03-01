@@ -43,8 +43,8 @@ class SplashPantalla extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        color: Colors.white,
-        child: Stack(
+        color: Colors.black,
+        child: Stack(alignment: Alignment.topCenter,
           children: [
             Positioned.fill(
               child: Lottie.asset("assets/noti.json"),
@@ -55,7 +55,7 @@ class SplashPantalla extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 title: const Text(
-                  'Iniciando Aplicación',
+                  'Iniciando',
                   style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
