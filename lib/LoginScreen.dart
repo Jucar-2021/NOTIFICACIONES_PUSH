@@ -48,30 +48,33 @@ class _LoginScreenState extends State<LoginScreen> {
     String email = mailController.text;
     String password = passwordController.text;
 
-    if (email.isNotEmpty && password.isNotEmpty) {
-      auth
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((result) async {
-        //Registrar fcm key
-        String? token = await obtenerToken();
-        User? user = result.user;
-        db
-            .collection("users")
-            .doc(user?.uid)
-            .set({"email": user?.email, "fcmToken": token});
+    try {
+      auth.signInWithEmailAndPassword(email: email, password: password).then(
+        (result) async {
+          //Registrar fcm key
+          String? token = await obtenerToken();
+          User? user = result.user;
+          db
+              .collection("users")
+              .doc(user?.uid)
+              .set({"email": user?.email, "fcmToken": token});
 
-        Navigator.pushReplacement(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => HomeScreen(
                 tokenUsuario: token!,
               ),
-            ));
-      }).catchError((error) {
-        showToast("Error " + error.toString(), gravity: Toast.center);
-      });
-    } else {
-      showToast("Provide email and password", gravity: Toast.center);
+            ),
+          );
+        },
+      ).catchError(
+        (error) {
+          showToast("Correo electronico o password incorectos",duration: 2, gravity: Toast.center);
+        },
+      );
+    } catch(e) {
+      showToast('Error inesperado ${e.toString()}', gravity: Toast.center);
     }
   }
 
@@ -97,9 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: mailController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-
+                      borderRadius: BorderRadius.circular(20)),
                   labelText: "Email",
                 ),
                 keyboardType: TextInputType.emailAddress,
@@ -114,9 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: passwordController,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-                 
+                        borderRadius: BorderRadius.circular(20)),
                     labelText: "Password"),
                 obscureText: true,
                 keyboardType: TextInputType.visiblePassword,
@@ -126,9 +125,61 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.green,
               child: Text("Login"),
               onPressed: () {
-                login();
+                if(mailController.text.isEmpty || passwordController.text.isEmpty){
+                  showToast("Email y password son obligatorios",duration: 3,gravity: Toast.bottom);
+                }else{
+
+                  loginGoogle();
+
+                }
+
+
               },
             )
+          ],
+        ),
+      ),
+    );
+  }
+  void loginGoogle() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // evita que el usuario cierre el login
+      builder: (context) {
+        return SplashPantalla();
+      },
+    );
+
+    // espera 6 segundos y luego inicia sesión
+    Future.delayed(Duration(seconds: 6), () {
+      Navigator.pop(context); // cierra el Splash
+      login(); // clama a login después de cerrar el splash
+    });
+  }
+
+}
+
+
+class SplashPantalla extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent, // fondo transparente para que se vea
+      child: Expanded(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset("assets/logi.gif"), // Imagen/GIF de carga
+            ),
+            Align(
+
+              alignment: Alignment.topCenter,
+              child: Padding(
+
+                padding: EdgeInsets.all(15.0),
+                child: Image.asset("assets/loa.gif")
+              ),
+            ),
           ],
         ),
       ),
