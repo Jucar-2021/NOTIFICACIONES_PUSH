@@ -96,8 +96,10 @@ class _LoginScreenState extends State<LoginScreen> {
               child: TextField(
                 controller: mailController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Email",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20)
+                  ),
+
                   labelText: "Email",
                 ),
                 keyboardType: TextInputType.emailAddress,
@@ -111,8 +113,10 @@ class _LoginScreenState extends State<LoginScreen> {
               child: TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Password",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                 
                     labelText: "Password"),
                 obscureText: true,
                 keyboardType: TextInputType.visiblePassword,
