@@ -67,10 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _getUsers() async {
     QuerySnapshot snapshot = await db.collection("users").get();
-    setState(() {
-      users = snapshot.docs;
-      print(users);
-    });
+    setState(
+      () {
+        users = snapshot.docs;
+        print(users);
+      },
+    );
   }
 
   @override
@@ -89,13 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.exit_to_app),
             color: Colors.black,
             onPressed: () {
-              FirebaseAuth.instance.signOut().then((val) {
-                Navigator.pushReplacement(
+              FirebaseAuth.instance.signOut().then(
+                (val) {
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginScreen(),
-                    ));
-              });
+                    ),
+                  );
+                },
+              );
             },
           )
         ],
@@ -137,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                   );
-                })
+                },
+              )
             : CircularProgressIndicator(),
       ),
     );
