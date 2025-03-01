@@ -47,6 +47,7 @@ class _MessageScreenState extends State<MessageScreen> {
     }).then((_) {
       controller.clear();
       _showSnackbar("Mensaje enviado con éxito.");
+      _showSnackbar("Si el usuario no esta activo se retorna el mensaje");
     }).catchError((error) {
       _showSnackbar("Error al enviar mensaje: $error");
     });
