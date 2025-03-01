@@ -2,7 +2,6 @@
 import 'package:ag4_notificaciones/LoginScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:toast/toast.dart';
 import 'package:lottie/lottie.dart';
 
 void main() async {
@@ -17,6 +16,7 @@ class App extends StatelessWidget {
     // TODO: implement build
 
     return MaterialApp(
+      title: "Notificaciones Push Equipo-4",
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
@@ -30,7 +30,7 @@ class SplashPantalla extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ajuste del tiempo de pantalla de presentacion
+    /// ajuste del tiempo de pantalla de presentacion
     Future.delayed(
       const Duration(seconds: 5),
       () {

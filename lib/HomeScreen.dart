@@ -17,134 +17,131 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
-
   List<DocumentSnapshot> users = [];
 
   @override
   void initState() {
-    // TODO: implement initState
-
     _getUsers();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("📩 onMessage: ${message.notification?.title}");
-      _showMessage("Notificación: ", "${message.notification?.body}");
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("📲 onMessageOpenedApp: ${message.notification?.title}");
-      _showMessage("Notificación: ", "${message.notification?.body}");
-    });
-
-    /* if(Platform.isIOS){
-        _firebaseMessaging.requestNotificationPermissions();
-        const IosNotificationSettings(sound: true, badge: true, alert:  true, provisional: true);
-    }*/
     super.initState();
+
+
+    // Escuchar notificaciones en primer plano
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _showNotificationDialog(
+          title: message.notification?.title ?? "Nueva Notificación",
+          message: message.notification?.body ?? "Sin contenido");
+    });
+
+    // Manejar cuando la app se abre desde una notificación
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _showNotificationDialog(
+          title: message.notification?.title ?? "Notificación Recibida",
+          message: message.notification?.body ?? "Sin contenido");
+    });
   }
 
-  _showMessage(title, message) {
+  /// se aplica diseño al dialoogo de notificacion
+  void _showNotificationDialog({required String title, required String message}) {
     showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          title: Row(
+            children: [
+              Icon(Icons.notifications, color: Colors.blue, size: 28),
+              SizedBox(width: 10),
+              Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ],
           ),
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-              },
-              child: Text("Dismiss"),
-            )
+          content: Text(message, style: TextStyle(fontSize: 16)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text("Cerrar", style: TextStyle(fontSize: 16, color: Colors.blue)),
+            ),
           ],
         );
       },
     );
   }
 
-  _getUsers() async {
+  /// se optienen los usuarios de s de firebase
+  Future<void> _getUsers() async {
     QuerySnapshot snapshot = await db.collection("users").get();
-    setState(
-      () {
-        users = snapshot.docs;
-        print(users);
-      },
-    );
+    print("Usuarios encontrados: ${snapshot.docs.length}");
+    setState(() {
+      users = snapshot.docs;
+    });
+  }
+
+  /// cerrar sesion y regresa a pantalla de login
+  void _logout() {
+    FirebaseAuth.instance.signOut().then((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Home",
-          style: TextStyle(color: Colors.black),
-        ),
+        title: Text("Correos del Grupo", style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: <Widget>[
+        backgroundColor: Colors.blueAccent,
+        elevation: 2,
+        actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app),
-            color: Colors.black,
-            onPressed: () {
-              FirebaseAuth.instance.signOut().then(
-                (val) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginScreen(),
-                    ),
-                  );
-                },
-              );
-            },
-          )
+            icon: Icon(Icons.exit_to_app, color: Colors.white),
+            onPressed: _logout,
+          ),
         ],
       ),
-      body: Container(
-        child: users != null
-            ? ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (ctx, index) {
-                  return Container(
-                    child: (users[index].data()
-                                as Map<String, dynamic>)["fcmToken"] ==
-                            widget.tokenUsuario
-                        ? Container()
-                        : ListTile(
-                            leading: CircleAvatar(
-                              child: Text(
-                                (users[index].data()
-                                            as Map<String, dynamic>)["email"]
-                                        ?.toString()
-                                        .substring(0, 1) ??
-                                    "?",
-                              ),
-                            ),
-                            title: Text(
-                              (users[index].data()
-                                      as Map<String, dynamic>)["email"] ??
-                                  "No email",
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MessageScreen(
-                                    doc: users[index],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                  );
-                },
-              )
-            : CircularProgressIndicator(),
+      body: users.isEmpty
+          ? Center(
+        child: Text(
+          "No hay usuarios disponibles",
+          style: TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      )
+          : ListView.builder(
+        padding: EdgeInsets.all(10),
+        itemCount: users.length,
+        itemBuilder: (ctx, index) {
+          final user = users[index].data() as Map<String, dynamic>;
+          final email = user["email"] ?? "No email";
+          final isCurrentUser = user["fcmToken"] != null && user["fcmToken"] == widget.tokenUsuario;
+          if (isCurrentUser) return SizedBox.shrink();
+
+          // No mostrar el usuario actual
+          //if (isCurrentUser) return SizedBox.shrink();
+
+          return Card(
+            elevation: 3,
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.blueAccent,
+                child: Text(
+                  email.substring(6, 7).toUpperCase(),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ),
+              title: Text(email, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              trailing: Icon(Icons.chat, color: Colors.blue),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MessageScreen(doc: users[index])),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
